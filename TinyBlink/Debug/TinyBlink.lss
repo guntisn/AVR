@@ -1,0 +1,142 @@
+
+TinyBlink.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000084  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  000000f8  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000001  00800060  00800060  000000f8  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  000000f8  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000128  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000030  00000000  00000000  00000168  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   000004e4  00000000  00000000  00000198  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 00000480  00000000  00000000  0000067c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   0000021a  00000000  00000000  00000afc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000054  00000000  00000000  00000d18  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    000002bc  00000000  00000000  00000d6c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    0000003c  00000000  00000000  00001028  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000020  00000000  00000000  00001064  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	1f c0       	rjmp	.+62     	; 0x42 <__bad_interrupt>
+   4:	1e c0       	rjmp	.+60     	; 0x42 <__bad_interrupt>
+   6:	1d c0       	rjmp	.+58     	; 0x42 <__bad_interrupt>
+   8:	1c c0       	rjmp	.+56     	; 0x42 <__bad_interrupt>
+   a:	1b c0       	rjmp	.+54     	; 0x42 <__bad_interrupt>
+   c:	1a c0       	rjmp	.+52     	; 0x42 <__bad_interrupt>
+   e:	19 c0       	rjmp	.+50     	; 0x42 <__bad_interrupt>
+  10:	18 c0       	rjmp	.+48     	; 0x42 <__bad_interrupt>
+  12:	17 c0       	rjmp	.+46     	; 0x42 <__bad_interrupt>
+  14:	16 c0       	rjmp	.+44     	; 0x42 <__bad_interrupt>
+  16:	15 c0       	rjmp	.+42     	; 0x42 <__bad_interrupt>
+  18:	14 c0       	rjmp	.+40     	; 0x42 <__bad_interrupt>
+  1a:	13 c0       	rjmp	.+38     	; 0x42 <__bad_interrupt>
+  1c:	12 c0       	rjmp	.+36     	; 0x42 <__bad_interrupt>
+  1e:	11 c0       	rjmp	.+34     	; 0x42 <__bad_interrupt>
+  20:	10 c0       	rjmp	.+32     	; 0x42 <__bad_interrupt>
+  22:	0f c0       	rjmp	.+30     	; 0x42 <__bad_interrupt>
+  24:	0e c0       	rjmp	.+28     	; 0x42 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf ed       	ldi	r28, 0xDF	; 223
+  2c:	cd bf       	out	0x3d, r28	; 61
+
+0000002e <__do_clear_bss>:
+  2e:	20 e0       	ldi	r18, 0x00	; 0
+  30:	a0 e6       	ldi	r26, 0x60	; 96
+  32:	b0 e0       	ldi	r27, 0x00	; 0
+  34:	01 c0       	rjmp	.+2      	; 0x38 <.do_clear_bss_start>
+
+00000036 <.do_clear_bss_loop>:
+  36:	1d 92       	st	X+, r1
+
+00000038 <.do_clear_bss_start>:
+  38:	a1 36       	cpi	r26, 0x61	; 97
+  3a:	b2 07       	cpc	r27, r18
+  3c:	e1 f7       	brne	.-8      	; 0x36 <.do_clear_bss_loop>
+  3e:	0e d0       	rcall	.+28     	; 0x5c <main>
+  40:	1f c0       	rjmp	.+62     	; 0x80 <_exit>
+
+00000042 <__bad_interrupt>:
+  42:	de cf       	rjmp	.-68     	; 0x0 <__vectors>
+
+00000044 <timer0_init>:
+	n++;
+}
+
+void timer0_init()
+{
+	TCNT0 = 0x00;
+  44:	12 be       	out	0x32, r1	; 50
+	OCR0A = 0x42;
+  46:	82 e4       	ldi	r24, 0x42	; 66
+  48:	86 bf       	out	0x36, r24	; 54
+	TCCR0A = (1<<CS00) | (1<<CS02); //pre-scaler 1024
+  4a:	85 e0       	ldi	r24, 0x05	; 5
+  4c:	80 bf       	out	0x30, r24	; 48
+	TIMSK |= (1<<OCIE0A); //enable overflow interrupt
+  4e:	89 b7       	in	r24, 0x39	; 57
+  50:	81 60       	ori	r24, 0x01	; 1
+  52:	89 bf       	out	0x39, r24	; 57
+	sei(); //enable global interrupts
+  54:	78 94       	sei
+	n = 0;
+  56:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <__DATA_REGION_ORIGIN__>
+  5a:	08 95       	ret
+
+0000005c <main>:
+}
+
+int main(void)
+{
+	DDRD = 0xFF;  //port D - output
+  5c:	8f ef       	ldi	r24, 0xFF	; 255
+  5e:	81 bb       	out	0x11, r24	; 17
+    timer0_init();
+  60:	f1 df       	rcall	.-30     	; 0x44 <timer0_init>
+    while (1) 
+    {
+		PORTD |= 1<<0;
+  62:	82 b3       	in	r24, 0x12	; 18
+  64:	81 60       	ori	r24, 0x01	; 1
+  66:	82 bb       	out	0x12, r24	; 18
+		//PORTD |= 1<<1;
+		if (n >= 150)
+  68:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__DATA_REGION_ORIGIN__>
+  6c:	86 39       	cpi	r24, 0x96	; 150
+  6e:	c8 f3       	brcs	.-14     	; 0x62 <main+0x6>
+		{
+			PORTD ^= 1<<1;
+  70:	92 b3       	in	r25, 0x12	; 18
+  72:	82 e0       	ldi	r24, 0x02	; 2
+  74:	89 27       	eor	r24, r25
+  76:	82 bb       	out	0x12, r24	; 18
+			TCNT0 = 0x00;
+  78:	12 be       	out	0x32, r1	; 50
+			n = 0;
+  7a:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <__DATA_REGION_ORIGIN__>
+  7e:	f1 cf       	rjmp	.-30     	; 0x62 <main+0x6>
+
+00000080 <_exit>:
+  80:	f8 94       	cli
+
+00000082 <__stop_program>:
+  82:	ff cf       	rjmp	.-2      	; 0x82 <__stop_program>
